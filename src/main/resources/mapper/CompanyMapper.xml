@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhzk.myproject.mapper.CompanyMapper">
+    <resultMap id="BaseResultMap" type="com.zhzk.myproject.entity.Company">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="suoxie" jdbcType="VARCHAR" property="suoxie" />
+        <result column="provinceid" jdbcType="INTEGER" property="provinceid" />
+        <result column="cityid" jdbcType="INTEGER" property="cityid" />
+        <result column="areaid" jdbcType="INTEGER" property="areaid" />
+        <result column="scale" jdbcType="INTEGER" property="scale" />
+        <result column="pickupman" jdbcType="VARCHAR" property="pickupman" />
+        <result column="tel" jdbcType="VARCHAR" property="tel" />
+        <result column="smsphone" jdbcType="VARCHAR" property="smsphone" />
+        <result column="saleman" jdbcType="BIGINT" property="saleman" />
+        <result column="ckstate" jdbcType="INTEGER" property="ckstate" />
+        <result column="state" jdbcType="INTEGER" property="state" />
+        <result column="accountid" jdbcType="BIGINT" property="accountid" />
+        <result column="operator" jdbcType="BIGINT" property="operator" />
+        <result column="creator" jdbcType="VARCHAR" property="creator" />
+        <result column="createtime" jdbcType="TIMESTAMP" property="createtime" />
+        <result column="balance" jdbcType="DECIMAL" property="balance"/>
+        <association property="cpyInv" javaType="com.zhzk.myproject.entity.CpyInv">
+            <id column="id" jdbcType="INTEGER" property="id" />
+            <result column="cpyid" jdbcType="INTEGER" property="cpyid" />
+            <result column="name" jdbcType="VARCHAR" property="name" />
+            <result column="taxno" jdbcType="VARCHAR" property="taxno" />
+            <result column="addressandtel" jdbcType="VARCHAR" property="addressandtel" />
+            <result column="bankandbankno" jdbcType="VARCHAR" property="bankandbankno" />
+            <result column="creator" jdbcType="VARCHAR" property="creator" />
+            <result column="createtime" jdbcType="TIMESTAMP" property="createtime" />
+            <result column="changeuser" jdbcType="VARCHAR" property="changeuser" />
+            <result column="changertime" jdbcType="TIMESTAMP" property="changertime" />
+        </association>
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, `name`, suoxie, provinceid, cityid, areaid, `scale`, pickupman, tel,
+        smsphone, saleman, ckstate, state, accountid, operator, createtime, balance
+    </sql>
+
+    <select id="selectCpyInv" resultMap="BaseResultMap">
+        SELECT * FROM yzb_company yc LEFT OUTER JOIN yzb_cpy_inv yci ON yc.`id`=yci.`cpyid`;
+
+    </select>
+
+
+    <select id="findAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from yzb_company
+    </select>
+
+
+    <select id="selectByCondition" parameterType="java.lang.Integer" resultType="com.zhzk.myproject.entity.Company">
+        select
+        <include refid="Base_Column_List" />
+        from yzb_company
+        <where>
+            <if test="name != null">
+               and name like CONCAT(CONCAT('%',#{name}),'%')
+            </if>
+            <if test="suoxie != null">
+                and suoxie like CONCAT(CONCAT('%',#{suoxie}),'%')
+            </if>
+            <if test="pickupman != null">
+                and pickupman like CONCAT(CONCAT('%',#{pickupman}),'%')
+            </if>
+        </where>
+
+    </select>
+    <select id="selectById" parameterType="Integer" resultType="com.zhzk.myproject.entity.Company">
+        select * from yzb_company where id = #{id}
+    </select>
+
+
+    <insert id="insert" parameterType="com.zhzk.myproject.entity.Company">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into yzb_company (`name`, suoxie, provinceid,
+        cityid, areaid, `scale`,
+        pickupman, tel, smsphone,
+        saleman, ckstate, `state`,
+        accountid, `operator`, creator,
+        createtime)
+        values (#{name,jdbcType=VARCHAR}, #{suoxie,jdbcType=VARCHAR}, #{provinceid,jdbcType=INTEGER},
+        #{cityid,jdbcType=INTEGER}, #{areaid,jdbcType=INTEGER}, #{scale,jdbcType=INTEGER},
+        #{pickupman,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, #{smsphone,jdbcType=VARCHAR},
+        #{saleman,jdbcType=BIGINT}, #{ckstate,jdbcType=INTEGER}, #{state,jdbcType=INTEGER},
+        #{accountid,jdbcType=BIGINT}, #{operator,jdbcType=BIGINT}, #{creator,jdbcType=VARCHAR},
+        #{createtime,jdbcType=TIMESTAMP})
+    </insert>
+    <select id="findCompanyInIds" parameterType="com.zhzk.myproject.entity.QueryVO" resultMap="BaseResultMap">
+        select * from yzb_company
+        <where>
+            <if test="ids!=null and ids.size()>0">
+                <foreach collection="ids" open="and id in (" close=")" item="id" separator=",">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+
+
+</mapper>
+

@@ -1,0 +1,27 @@
+server:
+  port: 8088
+  servlet:
+    context-path: /yzbManager
+
+spring:
+  datasource:
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/yzb?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+  jpa:
+    open-in-view: true
+  redis:
+    host: localhost
+    port: 6379
+
+
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+
+
+person:
+  name: zhang
+  age: 19
+  addr: beijing
