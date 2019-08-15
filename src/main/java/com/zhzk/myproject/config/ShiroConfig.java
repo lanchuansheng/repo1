@@ -1,13 +1,13 @@
 package com.zhzk.myproject.config;
 
-import org.apache.shiro.mgt.SecurityManager;
+
+import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.nio.channels.NonWritableChannelException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -28,8 +28,16 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         //添加Shiro内置过滤器
         Map<String,String> filterMap = new LinkedHashMap<>();
-        filterMap.put("/add","authc");
-        filterMap.put("/update","authc");
+     /*   filterMap.put("/add","authc");
+        filterMap.put("/update","authc");*/
+        //修改跳转的页面
+        filterMap.put("","anon");
+        filterMap.put("/*","authc");
+        filterMap.put("/add","perms[user:add]");
+
+
+        shiroFilterFactoryBean.setLoginUrl("/toLogin");
+        shiroFilterFactoryBean.setUnauthorizedUrl("/unAuth");
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterMap);
         return shiroFilterFactoryBean;
@@ -37,23 +45,32 @@ public class ShiroConfig {
 
 
     /**
-     * 创建DefaultWebSecuritymanager
+     * 创建DefaultWebSecuritymanager 安全管理器
      *
      * */
     @Bean(name = "securityManager")
     public DefaultWebSecurityManager getDefaultWebSecurityManager(@Qualifier("userRealm") UserRealm userRealm){
        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+       //管理realm
        securityManager.setRealm(userRealm);
        return securityManager;
     }
 
 
     /**
-     * 创建Realm
-     *
+     * 创建Realm  连接数据的桥梁
+     *  自定义UserReaml
      * */
-    @Bean(value = "userRealm")
+    @Bean(name = "userRealm")
     public UserRealm getRealm(){
         return new UserRealm();
+    }
+
+    /**
+     *  配置ShiroDialect，用于thymeleaf和shiro标签的配合使用
+     * */
+    @Bean
+    public ShiroDialect getShiroDialect(){
+        return new ShiroDialect();
     }
 }

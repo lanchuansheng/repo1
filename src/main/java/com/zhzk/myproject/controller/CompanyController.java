@@ -66,9 +66,15 @@ public class CompanyController {
         return companies;
 
     }
-    @GetMapping("selectById")
-    public List<Company> selectById(Integer id){
-        return companyService.selectById(id);
+    @GetMapping("selectById/{id}")
+    @ResponseBody
+    public Company selectById(@PathVariable(value = "id") Integer id){
+        List<Company> companies = companyService.selectById(id);
+        for (Company company : companies) {
+            return company;
+
+        }
+        return null;
 
     }
 
